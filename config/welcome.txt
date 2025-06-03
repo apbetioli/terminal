@@ -6,6 +6,5 @@ Navigate through the filesystem to explore:
 - Use 'ls' to list files and directories
 - Use 'cd' to change directories
 - Use 'cat' to read files
-- Press Tab for autocompletion
 
 [System Ready]

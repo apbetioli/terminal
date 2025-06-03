@@ -1,4 +1,11 @@
-export function setupMatrix() {
+export function matrix(output) {
+    output.innerHTML = '';
+    const startMatrix = setupMatrix();
+    startMatrix();
+    return '';
+}
+
+function setupMatrix() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     let animationId;
@@ -71,7 +78,7 @@ export function setupMatrix() {
             cancelAnimationFrame(animationId);
             document.body.removeChild(canvas);
             document.removeEventListener('keydown', cleanup);
-            commandInput.focus();
+            document.getElementById('commandInput').focus();
         };
 
         document.addEventListener('keydown', cleanup);

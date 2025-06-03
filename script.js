@@ -1,20 +1,20 @@
+// Import utilities at the top level
+import { loadContent } from './utils.js';
+import { getCurrentDirectory, getDirectoryFromPath } from './fileSystem.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
     const commandInput = document.getElementById('commandInput');
     const output = document.getElementById('output');
 
-    // File system structure
-    const fileSystem = {
-        'about.txt': { type: 'file', content: 'content/about.txt' },
-        'contact.txt': { type: 'file', content: 'content/contact.txt' },
-        'blog': {
-            type: 'directory',
-            contents: {
-                'terminal-design.txt': { type: 'file', content: 'content/blog/terminal-design.txt' },
-                'web-development.txt': { type: 'file', content: 'content/blog/web-development.txt' },
-                'user-experience.txt': { type: 'file', content: 'content/blog/user-experience.txt' }
-            }
-        }
-    };
+    // Import commands
+    const { ls } = await import('./commands/ls.js');
+    const { cd } = await import('./commands/cd.js');
+    const { cat } = await import('./commands/cat.js');
+    const { help } = await import('./commands/help.js');
+    const { clear } = await import('./commands/clear.js');
+    const { matrix } = await import('./commands/matrix.js');
+    
+    let currentPath = [];
 
     // Available commands (visible in tab completion)
     const visibleCommands = ['ls', 'cd', 'cat', 'help', 'clear'];
@@ -22,45 +22,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     // All commands (including hidden ones)
     const allCommands = [...visibleCommands, 'matrix'];
 
-    let currentPath = [];
-
-    // Function to load content from text files
-    async function loadContent(filename) {
-        try {
-            const response = await fetch(filename);
-            if (!response.ok) throw new Error(`Error loading ${filename}`);
-            return await response.text();
-        } catch (error) {
-            console.error(error);
-            return `Error loading ${filename} content.`;
-        }
-    }
-
-    // Get current directory object
-    function getCurrentDirectory() {
-        let current = fileSystem;
-        for (const dir of currentPath) {
-            current = current[dir].contents;
-        }
-        return current;
-    }
-
-    // Get directory contents from path
-    function getDirectoryFromPath(path) {
-        if (!path) return getCurrentDirectory();
-        
-        let current = getCurrentDirectory();
-        const parts = path.split('/').filter(p => p); // Remove empty parts
-        
-        for (const part of parts) {
-            if (current[part] && current[part].type === 'directory') {
-                current = current[part].contents;
-            } else {
-                throw new Error(`ls: ${path}: No such directory`);
-            }
-        }
-        return current;
-    }
+    // Command handlers
+    const commands = {
+        ls: (args) => ls(args, currentPath),
+        cd: (args) => cd(args, currentPath),
+        cat: async (args) => cat(args, currentPath),
+        help: async () => help(),
+        clear: () => clear(output),
+        matrix: () => matrix(output)
+    };
 
     // Format current path
     function getPromptPath() {
@@ -85,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Handle path completion
             const pathParts = lastPart.split('/');
             const partialName = pathParts.pop(); // Get the last part of the path
-            let currentDir = getCurrentDirectory();
+            let currentDir = getCurrentDirectory(currentPath);
             
             // Navigate through the path parts
             for (const part of pathParts) {
@@ -139,170 +109,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return prefix;
     }
 
-    // Matrix animation setup
-    function setupMatrix() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        let animationId;
-        let fontSize = 14;
-        
-        // Matrix characters
-        const chars = 'ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ0123456789'.split('');
-        const drops = [];
-
-        function initMatrix() {
-            canvas.style.position = 'fixed';
-            canvas.style.top = '0';
-            canvas.style.left = '0';
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
-            canvas.style.zIndex = '1000';
-            canvas.style.background = '#000';
-            document.body.appendChild(canvas);
-
-            // Set actual canvas size
-            function resize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                // Initialize drops
-                const columns = Math.ceil(canvas.width / fontSize);
-                while (drops.length < columns) {
-                    drops.push(0);
-                }
-            }
-
-            resize();
-            window.addEventListener('resize', resize);
-
-            ctx.font = fontSize + 'px monospace';
-            return canvas;
-        }
-
-        function drawMatrix() {
-            // Semi-transparent black to create fade effect
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = '#0F0';
-            ctx.font = fontSize + 'px monospace';
-
-            for (let i = 0; i < drops.length; i++) {
-                // Random character
-                const char = chars[Math.floor(Math.random() * chars.length)];
-                
-                // Draw the character
-                ctx.fillText(char, i * fontSize, drops[i] * fontSize);
-
-                // Reset drop if it's at the bottom or randomly
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-
-                drops[i]++;
-            }
-
-            animationId = requestAnimationFrame(drawMatrix);
-        }
-
-        function startMatrix() {
-            const canvas = initMatrix();
-            drawMatrix();
-
-            // Stop animation and return to terminal on any key press
-            const cleanup = () => {
-                cancelAnimationFrame(animationId);
-                document.body.removeChild(canvas);
-                document.removeEventListener('keydown', cleanup);
-                commandInput.focus();
-            };
-
-            document.addEventListener('keydown', cleanup);
-        }
-
-        return startMatrix;
-    }
-
-    // Command handlers
-    const commands = {
-        ls: (args) => {
-            try {
-                const dir = getDirectoryFromPath(args);
-                const items = Object.entries(dir).map(([name, item]) => {
-                    if (item.type === 'directory') {
-                        return name + '/';
-                    }
-                    return name;
-                });
-                return items.join('\n');
-            } catch (error) {
-                return error.message;
-            }
-        },
-
-        cd: async (args) => {
-            if (!args) {
-                return 'Usage: cd <directory>';
-            }
-
-            if (args === '..') {
-                if (currentPath.length > 0) {
-                    currentPath.pop();
-                    return '';
-                }
-                return 'Already at root directory';
-            }
-
-            const currentDir = getCurrentDirectory();
-            if (currentDir[args] && currentDir[args].type === 'directory') {
-                currentPath.push(args);
-                return '';
-            }
-            return `cd: ${args}: No such directory`;
-        },
-
-        cat: async (args) => {
-            if (!args) {
-                return 'Usage: cat <filename>';
-            }
-
-            const currentDir = getCurrentDirectory();
-            if (currentDir[args] && currentDir[args].type === 'file') {
-                const content = await loadContent(currentDir[args].content);
-                if (args === 'contact.txt') {
-                    return {
-                        content,
-                        isHTML: true
-                    };
-                }
-                return content;
-            }
-            return `cat: ${args}: No such file`;
-        },
-
-        help: async () => {
-            try {
-                return await loadContent('config/help.txt');
-            } catch (error) {
-                console.error('Error loading help:', error);
-                return 'Error loading help content. Please try again.';
-            }
-        },
-
-        clear: () => {
-            output.innerHTML = '';
-            return '';
-        },
-
-        matrix: () => {
-            output.innerHTML = '';
-            import('./matrix.js').then(module => {
-                const startMatrix = module.setupMatrix();
-                startMatrix();
-            });
-            return '';
-        }
-    };
-
     function addToOutput(text, isCommand = false, isHTML = false) {
         const div = document.createElement('div');
         div.className = 'command-output';
@@ -321,19 +127,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         div.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Display welcome message on load
-    try {
-        const welcomeMessage = await loadContent('config/welcome.txt');
-        addToOutput(welcomeMessage);
-    } catch (error) {
-        console.error('Error loading welcome message:', error);
-        addToOutput('Welcome to the Terminal Portfolio!\nType \'help\' for available commands.');
-    }
-
     // Update input prompt
     function updateInputPrompt() {
         const promptSpan = document.querySelector('.input-line .prompt');
         promptSpan.textContent = getPromptPath();
+    }
+
+    // Display welcome message on load
+    try {
+        const welcomeMessage = await loadContent('config/welcome.txt');
+        addToOutput(welcomeMessage);
+        updateInputPrompt();
+    } catch (error) {
+        console.error('Error loading welcome message:', error);
+        addToOutput('Welcome to the Terminal Portfolio!\nType \'help\' for available commands.');
+        updateInputPrompt();
     }
 
     // Handle tab completion
