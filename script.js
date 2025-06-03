@@ -39,14 +39,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Tab completion function
     function getCompletions(input) {
-        const parts = input.split(' ');
+        const trimmedInput = input.trimStart();
+        const leadingSpaces = input.length - trimmedInput.length;
+        const parts = trimmedInput.split(' ');
         const lastPart = parts[parts.length - 1].toLowerCase();
         
         // If this is the first word, complete only visible commands
         if (parts.length === 1) {
-            return visibleCommands.filter(cmd => 
+            const completions = visibleCommands.filter(cmd => 
                 cmd.toLowerCase().startsWith(lastPart)
             );
+            // Preserve leading spaces in completions
+            return completions.map(completion => ' '.repeat(leadingSpaces) + completion);
         }
 
         // For subsequent words, complete file/directory names
@@ -80,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Add path prefix back to matches
             const pathPrefix = pathParts.length > 0 ? pathParts.join('/') + '/' : '';
-            return matches.map(match => pathPrefix + match);
+            return matches.map(match => ' '.repeat(leadingSpaces) + parts.slice(0, -1).join(' ') + ' ' + pathPrefix + match);
         }
 
         return [];
@@ -153,9 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (completions.length === 1) {
                 // If there's only one completion, use it
-                const parts = input.split(' ');
-                parts[parts.length - 1] = completions[0];
-                commandInput.value = parts.join(' ');
+                commandInput.value = completions[0];
             } else if (completions.length > 1) {
                 // If there are multiple completions:
                 // 1. Display all possibilities
@@ -164,9 +166,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // 2. Complete to the longest common prefix
                 const commonPrefix = findCommonPrefix(completions);
                 if (commonPrefix) {
-                    const parts = input.split(' ');
-                    parts[parts.length - 1] = commonPrefix;
-                    commandInput.value = parts.join(' ');
+                    commandInput.value = commonPrefix;
                 }
             }
         }
