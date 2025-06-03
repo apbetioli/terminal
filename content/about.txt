@@ -1,0 +1,11 @@
+About Me
+-------------
+A passionate developer with a love for creating unique digital experiences.
+I specialize in web development and enjoy building interactive applications
+that push the boundaries of user interaction.
+
+Skills:
+- Frontend Development
+- Backend Development
+- UI/UX Design
+- Problem Solving 

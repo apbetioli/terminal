@@ -1,0 +1,8 @@
+Contact Information
+-------------------
+Email: <a href="mailto:example@domain.com" class="terminal-link">example@domain.com</a>
+GitHub: <a href="https://github.com/username" class="terminal-link" target="_blank">github.com/username</a>
+LinkedIn: <a href="https://linkedin.com/in/username" class="terminal-link" target="_blank">linkedin.com/in/username</a>
+Twitter: <a href="https://twitter.com/username" class="terminal-link" target="_blank">@username</a>
+
+Feel free to reach out! 

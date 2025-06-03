@@ -1,0 +1,107 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+body {
+    background-color: #000;
+    height: 100vh;
+    padding: 20px;
+}
+
+.terminal {
+    background-color: #000;
+    height: 100%;
+    border: 2px solid #00ff00;
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal-header {
+    background-color: #00ff00;
+    color: #000;
+    padding: 5px 10px;
+    font-weight: bold;
+}
+
+.terminal-content {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    color: #00ff00;
+}
+
+#output {
+    margin-bottom: 20px;
+}
+
+.input-line {
+    display: flex;
+    align-items: center;
+}
+
+.prompt {
+    color: #00ff00;
+    margin-right: 10px;
+}
+
+#commandInput {
+    background: transparent;
+    border: none;
+    color: #00ff00;
+    font-size: 16px;
+    outline: none;
+    width: 100%;
+}
+
+.command-output {
+    margin: 10px 0;
+    line-height: 1.4;
+    color: #008f00; /* Darker green for responses */
+}
+
+/* Keep the command input line bright green */
+.command-output .prompt {
+    color: #00ff00;
+}
+
+/* Style for typed commands */
+.command-output.command-text {
+    color: #90EE90; /* Light green for typed commands */
+}
+
+/* Add a blinking cursor effect */
+#commandInput::after {
+    content: "▋";
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* Style for links that might appear in the output */
+.terminal-link {
+    color: #90EE90;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.terminal-link:hover {
+    text-decoration: underline;
+    color: #00ff00;
+}
+
+.terminal-link:active {
+    color: #008f00;
+}
+
+/* Add a subtle transition effect */
+.terminal-link {
+    transition: color 0.2s ease-in-out;
+} 

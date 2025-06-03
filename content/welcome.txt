@@ -1,0 +1,8 @@
+Welcome to my Terminal Portfolio!
+================================
+Type 'help' to see available commands.
+
+This is an interactive terminal-style portfolio.
+Navigate through different sections using commands.
+
+[System Ready] 
