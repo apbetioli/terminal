@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const commandInput = document.getElementById('commandInput');
     const output = document.getElementById('output');
 
@@ -193,13 +193,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return `cat: ${args}: No such file`;
         },
 
-        help: () => `Available commands:
-ls - List directory contents
-cd <directory> - Change directory
-cd .. - Go to parent directory
-cat <filename> - Display file contents
-clear - Clear the screen
-help - Show this help message`,
+        help: async () => {
+            try {
+                return await loadContent('config/help.txt');
+            } catch (error) {
+                console.error('Error loading help:', error);
+                return 'Error loading help content. Please try again.';
+            }
+        },
 
         clear: () => {
             output.innerHTML = '';
@@ -226,10 +227,13 @@ help - Show this help message`,
     }
 
     // Display welcome message on load
-    addToOutput(`Welcome to the Terminal Portfolio!
-Type 'help' to see available commands.
-
-[System Ready]`);
+    try {
+        const welcomeMessage = await loadContent('config/welcome.txt');
+        addToOutput(welcomeMessage);
+    } catch (error) {
+        console.error('Error loading welcome message:', error);
+        addToOutput('Welcome to the Terminal Portfolio!\nType \'help\' for available commands.');
+    }
 
     // Update input prompt
     function updateInputPrompt() {

@@ -1,7 +1,0 @@
-Available commands:
-- help: Show this help message
-- about: Learn about me
-- blog: View my blog posts
-- contact: Get my contact information
-- clear: Clear the terminal
-- home: Return to welcome message 
