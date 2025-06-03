@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Available commands
+    const availableCommands = ['ls', 'cd', 'cat', 'help', 'clear'];
+
     let currentPath = [];
 
     // Function to load content from text files
@@ -39,22 +42,115 @@ document.addEventListener('DOMContentLoaded', () => {
         return current;
     }
 
+    // Get directory contents from path
+    function getDirectoryFromPath(path) {
+        if (!path) return getCurrentDirectory();
+        
+        let current = getCurrentDirectory();
+        const parts = path.split('/').filter(p => p); // Remove empty parts
+        
+        for (const part of parts) {
+            if (current[part] && current[part].type === 'directory') {
+                current = current[part].contents;
+            } else {
+                throw new Error(`ls: ${path}: No such directory`);
+            }
+        }
+        return current;
+    }
+
     // Format current path
     function getPromptPath() {
         return '/' + currentPath.join('/') + ' $';
     }
 
+    // Tab completion function
+    function getCompletions(input) {
+        const parts = input.split(' ');
+        const lastPart = parts[parts.length - 1].toLowerCase();
+        
+        // If this is the first word, complete commands
+        if (parts.length === 1) {
+            return availableCommands.filter(cmd => 
+                cmd.toLowerCase().startsWith(lastPart)
+            );
+        }
+
+        // For subsequent words, complete file/directory names
+        const command = parts[0].toLowerCase();
+        if (['cd', 'cat', 'ls'].includes(command)) {
+            // Handle path completion
+            const pathParts = lastPart.split('/');
+            const partialName = pathParts.pop(); // Get the last part of the path
+            let currentDir = getCurrentDirectory();
+            
+            // Navigate through the path parts
+            for (const part of pathParts) {
+                if (part === '') continue;
+                const matchingDir = Object.entries(currentDir)
+                    .find(([name, item]) => 
+                        item.type === 'directory' && 
+                        name.toLowerCase() === part.toLowerCase()
+                    );
+                if (matchingDir) {
+                    currentDir = matchingDir[1].contents;
+                } else {
+                    return []; // Invalid path
+                }
+            }
+
+            // Get completions in the current directory
+            const names = Object.keys(currentDir);
+            const matches = names.filter(name => 
+                name.toLowerCase().startsWith(partialName.toLowerCase())
+            );
+
+            // Add path prefix back to matches
+            const pathPrefix = pathParts.length > 0 ? pathParts.join('/') + '/' : '';
+            return matches.map(match => pathPrefix + match);
+        }
+
+        return [];
+    }
+
+    // Display completions in terminal
+    function displayCompletions(completions) {
+        if (completions.length > 0) {
+            addToOutput(completions.join('    '));
+            updateInputPrompt();
+        }
+    }
+
+    // Find the longest common prefix of an array of strings
+    function findCommonPrefix(strings) {
+        if (strings.length === 0) return '';
+        if (strings.length === 1) return strings[0];
+
+        let prefix = strings[0];
+        for (let i = 1; i < strings.length; i++) {
+            while (strings[i].toLowerCase().indexOf(prefix.toLowerCase()) !== 0) {
+                prefix = prefix.substring(0, prefix.length - 1);
+                if (prefix === '') return '';
+            }
+        }
+        return prefix;
+    }
+
     // Command handlers
     const commands = {
-        ls: () => {
-            const currentDir = getCurrentDirectory();
-            const items = Object.entries(currentDir).map(([name, item]) => {
-                if (item.type === 'directory') {
-                    return name + '/';
-                }
-                return name;
-            });
-            return items.join('\n');
+        ls: (args) => {
+            try {
+                const dir = getDirectoryFromPath(args);
+                const items = Object.entries(dir).map(([name, item]) => {
+                    if (item.type === 'directory') {
+                        return name + '/';
+                    }
+                    return name;
+                });
+                return items.join('\n');
+            } catch (error) {
+                return error.message;
+            }
         },
 
         cd: async (args) => {
@@ -140,6 +236,34 @@ Type 'help' to see available commands.
         const promptSpan = document.querySelector('.input-line .prompt');
         promptSpan.textContent = getPromptPath();
     }
+
+    // Handle tab completion
+    commandInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const input = commandInput.value;
+            const completions = getCompletions(input);
+
+            if (completions.length === 1) {
+                // If there's only one completion, use it
+                const parts = input.split(' ');
+                parts[parts.length - 1] = completions[0];
+                commandInput.value = parts.join(' ');
+            } else if (completions.length > 1) {
+                // If there are multiple completions:
+                // 1. Display all possibilities
+                displayCompletions(completions);
+                
+                // 2. Complete to the longest common prefix
+                const commonPrefix = findCommonPrefix(completions);
+                if (commonPrefix) {
+                    const parts = input.split(' ');
+                    parts[parts.length - 1] = commonPrefix;
+                    commandInput.value = parts.join(' ');
+                }
+            }
+        }
+    });
 
     commandInput.addEventListener('keypress', async (e) => {
         if (e.key === 'Enter') {
