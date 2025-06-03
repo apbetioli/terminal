@@ -9,7 +9,8 @@ export async function cat(args, currentPath) {
     const currentDir = getCurrentDirectory(currentPath);
     if (currentDir[args] && currentDir[args].type === 'file') {
         const content = await loadContent(currentDir[args].content);
-        if (args === 'contact.txt') {
+        // Check if content contains HTML tags
+        if (/<[^>]*>/g.test(content)) {
             return {
                 content,
                 isHTML: true
