@@ -35,10 +35,6 @@ body {
     color: #00ff00;
 }
 
-#output {
-    margin-bottom: 20px;
-}
-
 .input-line {
     display: flex;
     align-items: center;
@@ -47,6 +43,7 @@ body {
 .prompt {
     color: #00ff00;
     margin-right: 10px;
+    white-space: nowrap;
 }
 
 #commandInput {
@@ -59,7 +56,7 @@ body {
 }
 
 .command-output {
-    margin: 10px 0;
+    margin: 15px 0;
     line-height: 1.4;
     color: #008f00; /* Darker green for responses */
 }
@@ -72,6 +69,12 @@ body {
 /* Style for typed commands */
 .command-output.command-text {
     color: #90EE90; /* Light green for typed commands */
+}
+
+/* Style for directories in ls output */
+.directory {
+    color: #00ff00;
+    font-weight: bold;
 }
 
 /* Add a blinking cursor effect */

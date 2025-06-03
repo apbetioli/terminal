@@ -1,0 +1,21 @@
+User Experience Matters
+===================
+
+Posted: 2024-02-15
+
+Why UX should be your top priority in any development project
+and how to achieve excellent user experience.
+
+User experience is not just about making things look pretty;
+it's about creating interfaces that are intuitive, efficient,
+and enjoyable to use.
+
+Essential UX Principles:
+- User-Centered Design
+- Accessibility
+- Performance
+- Consistency
+- Clear Feedback
+
+Remember: The best interface is one that feels invisible to the user
+while helping them achieve their goals efficiently. 

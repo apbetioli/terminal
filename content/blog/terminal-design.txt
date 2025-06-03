@@ -1,0 +1,21 @@
+The Art of Terminal Design
+======================
+
+Posted: 2024-01-15
+
+A deep dive into creating retro-style interfaces that capture the essence
+of classic computing while maintaining modern usability standards.
+
+The terminal interface has been a cornerstone of computing since its inception.
+Even in today's GUI-dominated world, there's something uniquely appealing
+about the simplicity and directness of command-line interfaces.
+
+Key aspects of good terminal design:
+- Clear visual hierarchy
+- Consistent color scheme
+- Readable typography
+- Responsive feedback
+- Intuitive commands
+
+Modern terminals can combine the best of both worlds: the efficiency of
+command-line interfaces with the interactivity of modern web applications. 
