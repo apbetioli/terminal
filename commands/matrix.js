@@ -1,11 +1,61 @@
-export function matrix(output) {
-    output.innerHTML = '';
-    const startMatrix = setupMatrix();
-    startMatrix();
+export async function matrix(output) {
+    const commandInput = document.getElementById('commandInput');
+    const promptPrefix = document.getElementById('promptPrefix'); // Get prompt prefix
+
+    // Attempt to hide parent container first
+    if (commandInput && commandInput.parentNode instanceof HTMLElement) {
+        commandInput.parentNode.style.display = 'none';
+    }
+    // Also hide individual elements directly
+    if (commandInput) commandInput.style.display = 'none';
+    if (promptPrefix) promptPrefix.style.display = 'none'; // Hide prompt prefix
+
+    output.innerHTML = ''; // Clears screen for intro
+
+    const introLines = [
+        "Wake up, Neo...",
+        "The Matrix has you...",
+        "Follow the white rabbit.",
+        "", // Represents the blank line
+        "Knock, knock, Neo."
+    ];
+
+    const charTypingDelay = 60; // ms per character
+    const interLineDelay = 700; // ms between lines
+    const postIntroDelay = 1000; // ms after all intro text, before matrix starts
+
+    // Helper function to type a single line
+    async function typeLine(lineContent, targetElement) {
+        for (let i = 0; i < lineContent.length; i++) {
+            targetElement.innerHTML += lineContent[i];
+            await new Promise(resolve => setTimeout(resolve, charTypingDelay));
+        }
+    }
+
+    // Display intro sequence
+    for (const line of introLines) {
+        if (line === "") {
+            output.innerHTML += '<br>'; // Add an extra line break for the empty line
+        } else {
+            await typeLine(line, output);
+            output.innerHTML += '<br>';   // Add line break after the typed line
+        }
+        
+        // Pause after each line
+        await new Promise(resolve => setTimeout(resolve, interLineDelay));
+    }
+
+    // Additional pause after the entire intro is done
+    await new Promise(resolve => setTimeout(resolve, postIntroDelay));
+
+    // Start the actual matrix animation
+    const startActualMatrixAnimation = setupMatrix(output);
+    startActualMatrixAnimation();
+
     return '';
 }
 
-function setupMatrix() {
+function setupMatrix(output) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     let animationId;
@@ -88,15 +138,35 @@ function setupMatrix() {
     }
 
     function startMatrix() {
-        const canvas = initMatrix();
+        const canvasElement = initMatrix();
         animationId = requestAnimationFrame(drawMatrix);
 
         // Stop animation and return to terminal on any key press
         const cleanup = () => {
             cancelAnimationFrame(animationId);
-            document.body.removeChild(canvas);
+            document.body.removeChild(canvasElement);
             document.removeEventListener('keydown', cleanup);
-            document.getElementById('commandInput').focus();
+
+            // Clear the output content
+            if (output) {
+                output.innerHTML = '';
+            }
+
+            // Show and focus the command input
+            const localCommandInput = document.getElementById('commandInput');
+            const localPromptPrefix = document.getElementById('promptPrefix'); // Get prompt prefix again
+
+            // Restore parent container display
+            if (localCommandInput && localCommandInput.parentNode instanceof HTMLElement) {
+                localCommandInput.parentNode.style.display = ''; // Default display
+            }
+            // Also restore individual elements directly
+            if (localCommandInput) localCommandInput.style.display = '';
+            if (localPromptPrefix) localPromptPrefix.style.display = '';
+
+            if (localCommandInput) {
+                localCommandInput.focus();
+            }
         };
 
         document.addEventListener('keydown', cleanup);
