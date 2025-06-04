@@ -42,34 +42,37 @@ body {
 }
 
 .prompt {
-    color: #00ff00;
+    color: #b4ffb4;
     margin-right: 10px;
     white-space: nowrap;
+    font-weight: bold;
 }
 
 #commandInput {
     background: transparent;
     border: none;
-    color: #00ff00;
+    color: #b4ffb4;
     font-size: 16px;
     outline: none;
     width: 100%;
+    font-weight: bold;
 }
 
 .command-output {
     margin: 15px 0;
     line-height: 1.4;
-    color: #008f00; /* Darker green for responses */
+    color: #00ff00; /* Brighter green for responses */
 }
 
 /* Keep the command input line bright green */
 .command-output .prompt {
-    color: #00ff00;
+    color: #b4ffb4;
 }
 
 /* Style for typed commands */
 .command-output.command-text {
-    color: #90EE90; /* Light green for typed commands */
+    color: #b4ffb4; /* Brighter light green for typed commands */
+    font-weight: bold;
 }
 
 /* Style for directories in ls output */
@@ -91,13 +94,12 @@ body {
 /* Style for links that might appear in the output */
 .terminal-link {
     color: #90EE90;
-    text-decoration: none;
+    text-decoration: underline;
     cursor: pointer;
     position: relative;
 }
 
 .terminal-link:hover {
-    text-decoration: underline;
     color: #00ff00;
 }
 
