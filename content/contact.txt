@@ -1,8 +1,7 @@
 Contact Information
 -------------------
-Email: <a href="mailto:example@domain.com" class="terminal-link">example@domain.com</a>
-GitHub: <a href="https://github.com/username" class="terminal-link" target="_blank">github.com/username</a>
-LinkedIn: <a href="https://linkedin.com/in/username" class="terminal-link" target="_blank">linkedin.com/in/username</a>
-Twitter: <a href="https://twitter.com/username" class="terminal-link" target="_blank">@username</a>
+Email: <a href="mailto:apbetioli+site@domain.com" class="terminal-link">apbetioli@gmail.com</a>
+GitHub: <a href="https://github.com/apbetioli" class="terminal-link" target="_blank">github.com/apbetioli</a>
+LinkedIn: <a href="https://linkedin.com/in/apbetioli" class="terminal-link" target="_blank">linkedin.com/in/apbetioli</a>
 
 Feel free to reach out! 
