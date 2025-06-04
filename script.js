@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Format current path
     function getPromptPath() {
-        return '/' + currentPath.join('/') + ' $';
+        return '/' + currentPath.join('/') + '>';
     }
 
     // Tab completion function
