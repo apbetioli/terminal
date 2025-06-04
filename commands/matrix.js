@@ -9,11 +9,17 @@ function setupMatrix() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     let animationId;
-    let fontSize = 14;
+    let lastTime = 0;
+    const frameRate = 60; // Target 60 FPS
+    const frameDelay = 1000 / frameRate; // Time between frames in ms
     
     // Matrix characters
     const chars = 'ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ0123456789'.split('');
     const drops = [];
+    
+    // Calculate fontSize based on viewport height
+    const calculateFontSize = () => Math.floor(window.innerHeight / 50);
+    let fontSize = calculateFontSize();
 
     function initMatrix() {
         canvas.style.position = 'fixed';
@@ -27,11 +33,16 @@ function setupMatrix() {
 
         // Set actual canvas size
         function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            fontSize = calculateFontSize();
+            ctx.scale(dpr, dpr);
+            
             // Initialize drops
-            const columns = Math.ceil(canvas.width / fontSize);
-            while (drops.length < columns) {
+            const columns = Math.ceil(window.innerWidth / fontSize);
+            drops.length = 0; // Clear existing drops
+            for (let i = 0; i < columns; i++) {
                 drops.push(0);
             }
         }
@@ -43,7 +54,14 @@ function setupMatrix() {
         return canvas;
     }
 
-    function drawMatrix() {
+    function drawMatrix(currentTime) {
+        // Control frame rate
+        if (currentTime - lastTime < frameDelay) {
+            animationId = requestAnimationFrame(drawMatrix);
+            return;
+        }
+        lastTime = currentTime;
+
         // Semi-transparent black to create fade effect
         ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -59,7 +77,7 @@ function setupMatrix() {
             ctx.fillText(char, i * fontSize, drops[i] * fontSize);
 
             // Reset drop if it's at the bottom or randomly
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            if (drops[i] * fontSize > window.innerHeight && Math.random() > 0.975) {
                 drops[i] = 0;
             }
 
@@ -71,7 +89,7 @@ function setupMatrix() {
 
     function startMatrix() {
         const canvas = initMatrix();
-        drawMatrix();
+        animationId = requestAnimationFrame(drawMatrix);
 
         // Stop animation and return to terminal on any key press
         const cleanup = () => {
