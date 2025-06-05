@@ -5,6 +5,7 @@ import { getCurrentDirectory, getDirectoryFromPath } from './fileSystem.js';
 document.addEventListener('DOMContentLoaded', async () => {
     const commandInput = document.getElementById('commandInput');
     const output = document.getElementById('output');
+    const inputLine = document.querySelector('.input-line');
 
     // Import commands
     const { ls } = await import('./commands/ls.js');
@@ -219,18 +220,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             addToOutput(fullCommand, true);
             commandInput.value = '';
 
-            if (allCommands.includes(command) && command in commands) {
-                const result = await commands[command](args.join(' '));
-                if (result) {
-                    if (typeof result === 'object' && result.isHTML) {
-                        addToOutput(result.content, false, true);
-                    } else {
-                        addToOutput(result);
+            if (inputLine) inputLine.style.display = 'none';
+
+            try {
+                if (command === '') {
+                    // User pressed Enter on an empty line, do nothing here.
+                    // The 'finally' block will restore the prompt.
+                } else if (allCommands.includes(command) && command in commands) {
+                    const result = await commands[command](args.join(' '));
+                    if (result) {
+                        if (typeof result === 'object' && result.isHTML) {
+                            addToOutput(result.content, false, true);
+                        } else {
+                            addToOutput(result);
+                        }
                     }
+                } else {
+                    addToOutput(`Command not found: ${command}\nType 'help' for available commands.`);
                 }
+            } catch (error) {
+                console.error("Error executing command:", command, error);
+                addToOutput(`Error executing command: ${command}`);
+            } finally {
+                if (inputLine) inputLine.style.display = '';
                 updateInputPrompt();
-            } else if (command !== '') {
-                addToOutput(`Command not found: ${command}\nType 'help' for available commands.`);
+                commandInput.focus();
             }
         }
     });
