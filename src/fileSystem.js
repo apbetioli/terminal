@@ -1,14 +1,29 @@
 // File system structure
 export const fileSystem = {
-    'about.txt': { type: 'file', content: 'content/about.txt' },
-    'contact.txt': { type: 'file', content: 'content/contact.txt' },
-    'blog': {
-        type: 'directory',
-        contents: {
-            'terminal-design.txt': { type: 'file', content: 'content/blog/terminal-design.txt' },
-            'web-development.txt': { type: 'file', content: 'content/blog/web-development.txt' },
-            'user-experience.txt': { type: 'file', content: 'content/blog/user-experience.txt' }
+    "about.txt": {
+        "type": "file",
+        "content": "content/about.txt"
+    },
+    "blog": {
+        "type": "directory",
+        "contents": {
+            "terminal-design.txt": {
+                "type": "file",
+                "content": "content/blog/terminal-design.txt"
+            },
+            "user-experience.txt": {
+                "type": "file",
+                "content": "content/blog/user-experience.txt"
+            },
+            "web-development.txt": {
+                "type": "file",
+                "content": "content/blog/web-development.txt"
+            }
         }
+    },
+    "contact.txt": {
+        "type": "file",
+        "content": "content/contact.txt"
     }
 };
 
@@ -24,10 +39,10 @@ export function getCurrentDirectory(currentPath = []) {
 // Get directory contents from path
 export function getDirectoryFromPath(path, currentPath = []) {
     if (!path) return getCurrentDirectory(currentPath);
-    
+
     let current = getCurrentDirectory(currentPath);
     const parts = path.split('/').filter(p => p); // Remove empty parts
-    
+
     for (const part of parts) {
         if (current[part] && current[part].type === 'directory') {
             current = current[part].contents;
