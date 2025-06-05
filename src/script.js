@@ -222,8 +222,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                             if (chunk !== undefined && chunk !== null) {
                                 addToOutput(String(chunk));
 
-                                // Loading text effect
-                                // await new Promise(resolve => setTimeout(resolve, 50));
+                                // Streaming text effect
+                                await new Promise(resolve => setTimeout(resolve, 50));
                             }
                         }
                     } else {
