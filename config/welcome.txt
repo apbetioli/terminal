@@ -1,6 +1,3 @@
 Welcome!
 ================================
-
 Type 'help' to see available commands.
-
-[System Ready]
