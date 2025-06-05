@@ -114,18 +114,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         return prefix;
     }
 
-    function addToOutput(text, isCommand = false, isHTML = false) {
+    function addToOutput(text, isCommand = false) {
         const div = document.createElement('div');
         div.className = 'command-output';
         
         if (isCommand) {
             div.className += ' command-text';
             div.innerHTML = `<span class="prompt">${getPromptPath()}</span>${text}`;
-        } else if (isHTML) {
-            const lines = text.split('\n');
-            div.innerHTML = lines.map(line => line.trim()).join('<br>');
         } else {
-            div.innerText = text;
+            const lines = String(text).split('\n');
+            div.innerHTML = lines.map(line => line.trim()).join('<br>');
         }
         
         output.appendChild(div);
@@ -229,8 +227,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 } else if (allCommands.includes(command) && command in commands) {
                     const result = await commands[command](args.join(' '));
                     if (result) {
-                        if (typeof result === 'object' && result.isHTML) {
-                            addToOutput(result.content, false, true);
+                        if (typeof result === 'object' && result.content) {
+                            addToOutput(result.content);
                         } else {
                             addToOutput(result);
                         }

@@ -8,15 +8,7 @@ export async function cat(args, currentPath) {
 
     const currentDir = getCurrentDirectory(currentPath);
     if (currentDir[args] && currentDir[args].type === 'file') {
-        const content = await loadContent(currentDir[args].content);
-        // Check if content contains HTML tags
-        if (/<[^>]*>/g.test(content)) {
-            return {
-                content,
-                isHTML: true
-            };
-        }
-        return content;
+        return await loadContent(currentDir[args].content);
     }
     return `cat: ${args}: No such file`;
 } 

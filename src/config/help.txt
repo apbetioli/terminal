@@ -1,8 +1,9 @@
 Available commands:
 ================
-
+<pre>
 ls               - List directory contents
-cd <directory>   - Change to specified directory
-cat <filename>   - Display file contents
+cd [directory]   - Change to specified directory
+cat [filename]   - Display file contents
 clear            - Clear the terminal screen
 help             - Show this help message
+</pre>
