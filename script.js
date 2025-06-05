@@ -141,11 +141,49 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         const welcomeMessage = await loadContent('config/welcome.txt');
         addToOutput(welcomeMessage);
+        displayLastLogin();
         updateInputPrompt();
     } catch (error) {
         console.error('Error loading welcome message:', error);
-        addToOutput('Welcome to the Terminal Portfolio!\nType \'help\' for available commands.');
+        addToOutput('Welcome!\n\nType \'help\' for available commands.');
+        displayLastLogin();
         updateInputPrompt();
+    }
+
+    function getLastLoginTime() {
+        return localStorage.getItem('lastLoginTime');
+    }
+
+    function setLoginTime() {
+        localStorage.setItem('lastLoginTime', new Date().toString());
+    }
+
+    function displayLastLogin() {
+        const lastLoginTimestamp = getLastLoginTime();
+        let dateToShow;
+
+        if (lastLoginTimestamp) {
+            dateToShow = new Date(lastLoginTimestamp);
+        } else {
+            // First visit or localStorage cleared, show current time
+            dateToShow = new Date();
+        }
+
+        // Manual formatting for "Wed Jun 4 22:50:34"
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        const dayOfWeek = days[dateToShow.getDay()];
+        const month = months[dateToShow.getMonth()];
+        const day = dateToShow.getDate();
+        const hours = dateToShow.getHours().toString().padStart(2, '0');
+        const minutes = dateToShow.getMinutes().toString().padStart(2, '0');
+        const seconds = dateToShow.getSeconds().toString().padStart(2, '0');
+
+        const displayString = `Last login: ${dayOfWeek} ${month} ${day} ${hours}:${minutes}:${seconds}`;
+        addToOutput(displayString);
+
+        setLoginTime(); // Update the login time for the next visit
     }
 
     // Handle tab completion
