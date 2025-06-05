@@ -1,14 +1,16 @@
 import { getCurrentDirectory, getDirectoryFromPath } from '../fileSystem.js';
 import { loadContent } from '../utils.js';
 
-export async function cat(args, currentPath) {
+export async function* cat(args, currentPath) {
     if (!args) {
-        return 'Usage: cat <filepath>';
+        yield 'Usage: cat <filepath>';
+        return;
     }
 
     const pathParts = args.split('/').filter(part => part !== ''); // Filter out empty parts from leading/trailing/multiple slashes
     if (pathParts.length === 0) {
-        return 'Usage: cat <filepath>';
+        yield 'Usage: cat <filepath>';
+        return;
     }
 
     const fileName = pathParts.pop(); // Last part is the filename
@@ -43,18 +45,23 @@ export async function cat(args, currentPath) {
         }
 
         if (!pathValid) {
-            return `cat: ${args}: No such file or directory`;
+            yield `cat: ${args}: No such file or directory`;
+            return;
         }
         targetDir = tempCurrentDirObject;
     }
 
     if (targetDir && targetDir[fileName] && targetDir[fileName].type === 'file') {
         try {
-            return await loadContent(targetDir[fileName].content);
+            // Use yield* to delegate to the loadContent async generator
+            yield* loadContent(targetDir[fileName].content);
         } catch (error) {
-            console.error(`Error loading content for ${args}:`, error);
-            return `cat: ${args}: Error loading file content`;
+            console.error(`Error streaming content for ${args}:`, error);
+            yield `cat: ${args}: Error streaming file content`;
         }
+    } else if (targetDir && targetDir[fileName] && targetDir[fileName].type === 'directory') {
+        yield `cat: ${args}: Is a directory`;
+    } else {
+        yield `cat: ${args}: No such file`;
     }
-    return `cat: ${args}: No such file`;
 } 

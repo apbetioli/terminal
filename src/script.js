@@ -27,8 +27,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const commands = {
         ls: (args) => ls(args, currentPath),
         cd: (args) => cd(args, currentPath),
-        cat: async (args) => cat(args, currentPath),
-        help: async () => help(),
+        cat: (args) => cat(args, currentPath),
+        help: () => help(),
         clear: () => clear(output),
         matrix: () => matrix(output)
     };
@@ -132,21 +132,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Update input prompt
     function updateInputPrompt() {
+        addToOutput("\n")
         const promptSpan = document.querySelector('.input-line .prompt');
         promptSpan.textContent = getPromptPath();
-    }
-
-    // Display welcome message on load
-    try {
-        const welcomeMessage = await loadContent('config/welcome.txt');
-        addToOutput(welcomeMessage);
-        displayLastLogin();
-        updateInputPrompt();
-    } catch (error) {
-        console.error('Error loading welcome message:', error);
-        addToOutput('Welcome!\n\nType \'help\' for available commands.');
-        displayLastLogin();
-        updateInputPrompt();
     }
 
     function getLastLoginTime() {
@@ -225,12 +213,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // User pressed Enter on an empty line, do nothing here.
                     // The 'finally' block will restore the prompt.
                 } else if (allCommands.includes(command) && command in commands) {
-                    const result = await commands[command](args.join(' '));
-                    if (result) {
-                        if (typeof result === 'object' && result.content) {
-                            addToOutput(result.content);
-                        } else {
-                            addToOutput(result);
+                    const commandFn = commands[command];
+                    const result = commandFn(args.join(' ')); // Execute the command
+
+                    // Check if the result is an async generator
+                    if (result && typeof result[Symbol.asyncIterator] === 'function') {
+                        for await (const chunk of result) {
+                            if (chunk !== undefined && chunk !== null) {
+                                addToOutput(String(chunk));
+
+                                // Loading text effect
+                                // await new Promise(resolve => setTimeout(resolve, 50));
+                            }
+                        }
+                    } else {
+                        // Handle synchronous commands or promises that resolve to a single value
+                        const finalResult = await result; // Await if it's a promise
+                        if (finalResult !== undefined && finalResult !== null) {
+                            if (typeof finalResult === 'object' && finalResult.content) {
+                                addToOutput(finalResult.content);
+                            } else {
+                                addToOutput(String(finalResult));
+                            }
                         }
                     }
                 } else {
@@ -251,4 +255,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener('click', () => {
         commandInput.focus();
     });
+
+
+    displayLastLogin();
+    updateInputPrompt();
 }); 
