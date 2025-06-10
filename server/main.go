@@ -1,13 +1,17 @@
 package main
 
-import "github.com/kataras/iris/v12"
+import (
+	"log"
+	"net/http"
+)
 
 func main() {
-	app := iris.New()
+	fs := http.FileServer(http.Dir("../src"))
+	http.Handle("/", fs)
 
-	app.HandleDir("/", iris.Dir("../src"))
-
-	print("Listening on http://localhost:4000")
-
-	app.Listen(":4000")
+	log.Println("Serving on http://localhost:4000")
+	err := http.ListenAndServe(":4000", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
