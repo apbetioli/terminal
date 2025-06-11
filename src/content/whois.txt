@@ -1,0 +1,21 @@
+THERE AND BACK AGAIN
+<i>A programmer's tale by Alexandre Betioli</i>
+
+It all started with a simple quiz program written in a Windows 98 batch file. I spent countless hours exploring my computer's files, trying to understand how programs worked, with only a BASIC programming book as my guide.
+
+Upon discovering the Internet, my curiosity led me to game development. Starting with creating CounterStrike maps, I eventually built my first game: a quirky first-person shooter where you wielded a fish that shot fireworks. That's when I knew programming was my calling.
+
+My first web project was a <a href="https://en.wikipedia.org/wiki/Photoblog" class="terminal-link" target="_blank">photolog</a> built with PHP and MySQL, designed to help my family share photos with each other before Facebook existed.
+
+After university, I started my software engineering career, working with various tech stacks and diverse teams.
+
+Outside my regular job, I always yearned to build something of my own. Together with my friend Thiago, we embarked on several ventures. We initially ventured into Android app development, but without much success. Later, we dove into indie game development and created a <a href="https://l9studios.com" class="terminal-link" target="_blank">Unity asset</a> that garnered over 200 sales in the Unity Asset Store. We even ventured into 3D printing, building our printers from scratch (a story that deserves its own post) and ran a 3D printing e-commerce business.
+
+Life took an interesting turn when my son was born. Seeking more flexibility, I made a bold move: selling my house to fund my entrepreneurial journey. I studied marketing and launched a 3D printing YouTube channel and sold a few copies of an online course. Running a one-person show proved challenging: creating content, editing videos, and handling marketing was overwhelming. That's when my wife Mariana joined the venture, taking charge of content creation, focusing on a new area, while I handled technology and marketing. Together, we built a <a href="https://mariubialli.com.br" class="terminal-link" target="_blank">learning platform</a> that attracted over 1,500 subscribers. We sustained the business for nearly three years until funds ran low, and I realized how much I missed being a full-time programmer.
+
+Now, I'm back in software engineering, excited about the possibilities ahead and ready to build remarkable things. Let's go!
+
+If you've made it this far, here's an Easter egg for you. Type in the command <i>matrix</i>.
+
+<i>"Don't only practice your art but force your way into its secrets. For it and knowledge can raise men to the divine." 
+- Ludwig Van Beethoven</i>

@@ -24,6 +24,10 @@ export const fileSystem = {
     "contact.txt": {
         "type": "file",
         "content": "content/contact.txt"
+    },
+    "whois.txt": {
+        "type": "file",
+        "content": "content/whois.txt"
     }
 };
 
